@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — EduPrime</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --bg:#0d1117; --bg2:#161b22; --bg3:#21262d; --border:#30363d;
+    --text:#e6edf3; --text2:#8b949e; --accent:#f0883e; --accent2:#ffa657;
+    --green:#3fb950; --red:#f85149;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Sora',sans-serif; background:var(--bg);
+    color:var(--text); min-height:100vh;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+
+  .register-wrap {
+    display:flex; width:100%; max-width:960px;
+    border-radius:20px; overflow:hidden;
+    border:1px solid var(--border); box-shadow:0 24px 80px rgba(0,0,0,.6);
+  }
+
+  /* Left art panel */
+  .register-art {
+    width:320px; flex-shrink:0;
+    background:linear-gradient(160deg,#1a1f2e 0%,#0d1117 60%,#1a1208 100%);
+    display:flex; flex-direction:column; justify-content:center;
+    padding:48px 36px; position:relative; overflow:hidden;
+  }
+  .register-art::before {
+    content:'';position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(240,136,62,.18) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(88,166,255,.08) 0%, transparent 50%);
+  }
+  .art-dots { position:absolute; top:28px; right:28px; display:flex; gap:7px; }
+  .art-dots span { width:9px; height:9px; border-radius:50%; }
+  .dot1 { background:var(--accent); }
+  .dot2 { background:#58a6ff; }
+  .dot3 { background:var(--green); }
+  .art-icon { font-size:48px; color:var(--accent); margin-bottom:20px; position:relative; }
+  .art-title { font-size:28px; font-weight:800; line-height:1.2; position:relative; }
+  .art-title span { color:var(--accent); }
+  .art-sub { font-size:13px; color:var(--text2); margin-top:10px; line-height:1.7; position:relative; }
+  .art-steps { margin-top:28px; display:flex; flex-direction:column; gap:10px; position:relative; }
+  .art-step { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text2); }
+  .art-step-num {
+    width:22px; height:22px; border-radius:50%; background:rgba(240,136,62,.2);
+    border:1px solid var(--accent); display:flex; align-items:center;
+    justify-content:center; font-size:10px; font-weight:700; color:var(--accent); flex-shrink:0;
+  }
+
+  /* Right form panel */
+  .register-form-wrap {
+    flex:1; background:var(--bg2); padding:40px 36px;
+    overflow-y:auto; max-height:100vh;
+  }
+  .form-title { font-size:20px; font-weight:700; margin-bottom:4px; }
+  .form-sub { font-size:13px; color:var(--text2); margin-bottom:28px; }
+
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-group.full { grid-column:1/-1; }
+  .form-group label {
+    font-size:11px; font-weight:600; text-transform:uppercase;
+    letter-spacing:.5px; color:var(--text2);
+  }
+  .form-input {
+    background:var(--bg3) !important; border:1px solid var(--border) !important;
+    border-radius:8px !important; padding:10px 14px !important;
+    color:var(--text) !important; font-size:13.5px !important;
+    font-family:'Sora',sans-serif !important; transition:border-color .2s !important;
+    width:100% !important;
+  }
+  .form-input:focus {
+    outline:none !important; border-color:var(--accent) !important;
+    box-shadow:0 0 0 3px rgba(240,136,62,.1) !important;
+  }
+  select.form-input option { background:var(--bg3); }
+  .form-error { font-size:11px; color:var(--red); margin-top:2px; }
+
+  .divider {
+    grid-column:1/-1; border:none; border-top:1px solid var(--border);
+    margin:4px 0;
+  }
+  .section-label {
+    grid-column:1/-1; font-size:11px; font-weight:700;
+    text-transform:uppercase; letter-spacing:1px;
+    color:var(--accent); padding-top:4px;
+  }
+
+  .btn-register {
+    width:100%; background:var(--accent); color:#fff; border:none;
+    border-radius:10px; padding:13px; font-size:15px; font-weight:700;
+    cursor:pointer; font-family:'Sora',sans-serif;
+    transition:background .2s, transform .1s; margin-top:20px;
+  }
+  .btn-register:hover { background:var(--accent2); transform:translateY(-1px); }
+
+  .login-link {
+    text-align:center; margin-top:16px; font-size:13px; color:var(--text2);
+  }
+  .login-link a { color:var(--accent); text-decoration:none; font-weight:600; }
+  .login-link a:hover { text-decoration:underline; }
+
+  .error-box {
+    grid-column:1/-1;
+    background:rgba(248,81,73,.1); border:1px solid rgba(248,81,73,.3);
+    color:var(--red); padding:10px 14px; border-radius:8px; font-size:13px;
+  }
+</style>
+</head>
+<body>
+<div class="register-wrap">
+
+  <!-- Art panel -->
+  <div class="register-art">
+    <div class="art-dots">
+      <span class="dot1"></span><span class="dot2"></span><span class="dot3"></span>
+    </div>
+    <div class="art-icon"><i class="fas fa-user-plus"></i></div>
+    <div class="art-title">Join<br><span>EduPrime</span></div>
+    <div class="art-sub">Create your account to access the school management system.</div>
+    <div class="art-steps">
+      <div class="art-step"><div class="art-step-num">1</div> Fill in your details</div>
+      <div class="art-step"><div class="art-step-num">2</div> Choose your role</div>
+      <div class="art-step"><div class="art-step-num">3</div> Access the dashboard</div>
+    </div>
+  </div>
+
+  <!-- Form panel -->
+  <div class="register-form-wrap">
+    <div class="form-title">Create Account</div>
+    <div class="form-sub">Fill in the form below to register</div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-grid">
+
+        {% if form.non_field_errors %}
+        <div class="error-box">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="section-label"><i class="fas fa-id-card"></i> Personal Info</div>
+
+        <div class="form-group">
+          <label>First Name <span style="color:var(--red)">*</span></label>
+          {{ form.first_name }}
+          {% if form.first_name.errors %}<div class="form-error">{{ form.first_name.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label>Last Name <span style="color:var(--red)">*</span></label>
+          {{ form.last_name }}
+          {% if form.last_name.errors %}<div class="form-error">{{ form.last_name.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          {{ form.email }}
+          {% if form.email.errors %}<div class="form-error">{{ form.email.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label>Phone</label>
+          {{ form.phone }}
+          {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors.0 }}</div>{% endif %}
+        </div>
+
+        <hr class="divider">
+        <div class="section-label"><i class="fas fa-lock"></i> Account Details</div>
+
+        <div class="form-group">
+          <label>Username <span style="color:var(--red)">*</span></label>
+          {{ form.username }}
+          {% if form.username.errors %}<div class="form-error">{{ form.username.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label>Role <span style="color:var(--red)">*</span></label>
+          {{ form.role }}
+          {% if form.role.errors %}<div class="form-error">{{ form.role.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label>Password <span style="color:var(--red)">*</span></label>
+          {{ form.password1 }}
+          {% if form.password1.errors %}<div class="form-error">{{ form.password1.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label>Confirm Password <span style="color:var(--red)">*</span></label>
+          {{ form.password2 }}
+          {% if form.password2.errors %}<div class="form-error">{{ form.password2.errors.0 }}</div>{% endif %}
+        </div>
+
+      </div>
+
+      <button type="submit" class="btn-register">
+        <i class="fas fa-user-plus"></i> Create Account
+      </button>
+    </form>
+
+    <div class="login-link">
+      Already have an account? <a href="{% url 'login' %}">Sign in</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

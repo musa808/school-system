@@ -1,0 +1,86 @@
+{% extends 'school/base.html' %}
+{% block title %}{{ title }} — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / <a href="{% url 'student_list' %}">Students</a> / {{ title }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">{{ title }}</div>
+    <div class="page-subtitle">Fill in the student details below</div>
+  </div>
+  <a href="{% url 'student_list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div style="margin-bottom:24px;">
+        <div style="font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+          <i class="fas fa-id-card"></i> Personal Information
+        </div>
+        <div class="form-grid">
+          {% for field in form %}
+          {% if field.name in "first_name,last_name,date_of_birth,gender,blood_group,photo,student_id" %}
+          <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="form-error">{{ field.errors.0 }}</div>{% endif %}
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="margin-bottom:24px;">
+        <div style="font-size:13px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+          <i class="fas fa-school"></i> Academic Details
+        </div>
+        <div class="form-grid">
+          {% for field in form %}
+          {% if field.name in "section,admission_date,address" %}
+          <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="form-error">{{ field.errors.0 }}</div>{% endif %}
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="margin-bottom:24px;">
+        <div style="font-size:13px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+          <i class="fas fa-user-friends"></i> Guardian Information
+        </div>
+        <div class="form-grid">
+          {% for field in form %}
+          {% if field.name in "guardian_name,guardian_phone,guardian_email,guardian_relationship" %}
+          <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="form-error">{{ field.errors.0 }}</div>{% endif %}
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Remaining fields -->
+      {% for field in form %}
+      {% if field.name not in "first_name,last_name,date_of_birth,gender,blood_group,photo,student_id,section,admission_date,address,guardian_name,guardian_phone,guardian_email,guardian_relationship" %}
+      <div class="form-group" style="margin-bottom:16px;">
+        <label>{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<div class="form-error">{{ field.errors.0 }}</div>{% endif %}
+      </div>
+      {% endif %}
+      {% endfor %}
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Student</button>
+        <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

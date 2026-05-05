@@ -1,0 +1,101 @@
+{% extends 'school/base.html' %}
+{% block title %}{{ section }} — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / <a href="{% url 'class_list' %}">Classes</a> / {{ section }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">{{ section }}</div>
+    <div class="page-subtitle">{{ section.academic_year.name }} · {{ students.count }} students enrolled</div>
+  </div>
+  <div style="display:flex;gap:10px;">
+    <a href="{% url 'attendance_mark' %}?section={{ section.pk }}" class="btn btn-primary"><i class="fas fa-clipboard-check"></i> Mark Attendance</a>
+    <a href="{% url 'timetable_list' %}?section={{ section.pk }}" class="btn btn-secondary"><i class="fas fa-calendar-week"></i> Timetable</a>
+  </div>
+</div>
+
+<div class="grid-2" style="margin-bottom:20px;">
+  <div class="card">
+    <div class="card-header"><span class="card-title"><i class="fas fa-info-circle" style="color:var(--blue)"></i> Class Info</span></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Grade</div><div style="font-size:14px;margin-top:3px;">{{ section.grade.name }}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Section</div><div style="font-size:14px;margin-top:3px;">{{ section.name }}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Class Teacher</div><div style="font-size:14px;margin-top:3px;">{{ section.class_teacher.get_full_name|default:"Not assigned" }}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Capacity</div><div style="font-size:14px;margin-top:3px;">{{ students.count }} / {{ section.capacity }}</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title"><i class="fas fa-clipboard-check" style="color:var(--green)"></i> Today's Attendance</span></div>
+    <div class="card-body">
+      {% if today_attendance %}
+      <div style="display:flex;gap:20px;">
+        <div style="text-align:center;"><div style="font-size:32px;font-weight:800;color:var(--green);">{{ today_attendance.filter.status='present'|length }}</div><div style="font-size:12px;color:var(--text2);">Present</div></div>
+        <div style="text-align:center;"><div style="font-size:32px;font-weight:800;color:var(--red);">{{ today_attendance.filter.status='absent'|length }}</div><div style="font-size:12px;color:var(--text2);">Absent</div></div>
+      </div>
+      {% else %}
+      <div style="color:var(--text2);font-size:13px;">No attendance marked today.</div>
+      <a href="{% url 'attendance_mark' %}?section={{ section.pk }}" class="btn btn-sm btn-primary" style="margin-top:10px;"><i class="fas fa-pen"></i> Mark Now</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Students Table -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-header">
+    <span class="card-title"><i class="fas fa-user-graduate" style="color:var(--blue)"></i> Students ({{ students.count }})</span>
+    <a href="{% url 'student_add' %}" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Add Student</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Student ID</th><th>Gender</th><th>Guardian</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for student in students %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="avatar">{{ student.first_name|first }}{{ student.last_name|first }}</div>
+              <strong>{{ student.get_full_name }}</strong>
+            </div>
+          </td>
+          <td><code style="font-size:12px;color:var(--accent);">{{ student.student_id }}</code></td>
+          <td><span class="badge {% if student.gender == 'M' %}badge-blue{% else %}badge-purple{% endif %}">{% if student.gender == 'M' %}Male{% else %}Female{% endif %}</span></td>
+          <td style="font-size:13px;">{{ student.guardian_name }} <span style="color:var(--text2);">({{ student.guardian_phone }})</span></td>
+          <td><a href="{% url 'student_detail' student.pk %}" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i></a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5"><div class="empty-state"><i class="fas fa-users"></i><p>No students in this class</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Timetable Preview -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-title"><i class="fas fa-calendar-week" style="color:var(--purple)"></i> Timetable</span>
+    <a href="{% url 'timetable_add' %}" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Add</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Day</th><th>Subject</th><th>Teacher</th><th>Start</th><th>End</th></tr></thead>
+      <tbody>
+        {% for tt in timetables %}
+        <tr>
+          <td><span class="badge badge-blue">{{ tt.get_day_display }}</span></td>
+          <td><strong>{{ tt.subject.name }}</strong></td>
+          <td>{{ tt.teacher.get_full_name }}</td>
+          <td>{{ tt.start_time|time:"H:i" }}</td>
+          <td>{{ tt.end_time|time:"H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5"><div class="empty-state"><i class="fas fa-calendar"></i><p>No timetable entries yet</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

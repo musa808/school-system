@@ -1,0 +1,134 @@
+{% extends 'school/base.html' %}
+{% block title %}Attendance Report — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / <a href="{% url 'attendance_list' %}">Attendance</a> / Report{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">Attendance Report</div></div>
+</div>
+
+<style>
+  .att-bar {
+    height: 6px;
+    border-radius: 4px;
+    max-width: 100%;
+    min-width: 4px;
+    width: 0;
+    transition: width 0.6s ease;
+  }
+  .att-bar-good { background: var(--green); }
+  .att-bar-warn { background: var(--yellow); }
+  .att-bar-bad  { background: var(--red); }
+  .att-bar-wrap {
+    flex: 1;
+    background: var(--bg3);
+    border-radius: 4px;
+    height: 6px;
+    min-width: 80px;
+    overflow: hidden;
+  }
+  .pct-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pct-label {
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 36px;
+  }
+</style>
+
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-body">
+    <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+      <div class="form-group">
+        <label>Class</label>
+        <select class="form-input" name="section" style="width:180px;">
+          <option value="">Select class...</option>
+          {% for s in sections %}
+          <option value="{{ s.id }}" {% if selected_section == s.id|stringformat:"s" %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Month</label>
+        <select class="form-input" name="month" style="width:150px;">
+          <option value="1"  {% if month == "1"  %}selected{% endif %}>January</option>
+          <option value="2"  {% if month == "2"  %}selected{% endif %}>February</option>
+          <option value="3"  {% if month == "3"  %}selected{% endif %}>March</option>
+          <option value="4"  {% if month == "4"  %}selected{% endif %}>April</option>
+          <option value="5"  {% if month == "5"  %}selected{% endif %}>May</option>
+          <option value="6"  {% if month == "6"  %}selected{% endif %}>June</option>
+          <option value="7"  {% if month == "7"  %}selected{% endif %}>July</option>
+          <option value="8"  {% if month == "8"  %}selected{% endif %}>August</option>
+          <option value="9"  {% if month == "9"  %}selected{% endif %}>September</option>
+          <option value="10" {% if month == "10" %}selected{% endif %}>October</option>
+          <option value="11" {% if month == "11" %}selected{% endif %}>November</option>
+          <option value="12" {% if month == "12" %}selected{% endif %}>December</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Year</label>
+        <input type="number" class="form-input" name="year" value="{{ year }}" style="width:100px;">
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-search"></i> Generate
+      </button>
+    </form>
+  </div>
+</div>
+
+{% if report_data %}
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Present</th>
+          <th>Absent</th>
+          <th>Late</th>
+          <th>Total Days</th>
+          <th>Attendance %</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in report_data %}
+        <tr>
+          <td><strong>{{ row.student.get_full_name }}</strong></td>
+          <td style="color:var(--green);font-weight:600;">{{ row.present }}</td>
+          <td style="color:var(--red);font-weight:600;">{{ row.absent }}</td>
+          <td style="color:var(--yellow);font-weight:600;">{{ row.late }}</td>
+          <td>{{ row.total }}</td>
+          <td>
+            <div class="pct-cell">
+              <div class="att-bar-wrap">
+                {% if row.pct >= 75 %}
+                  <div class="att-bar att-bar-good" data-pct="{{ row.pct }}"></div>
+                {% elif row.pct >= 50 %}
+                  <div class="att-bar att-bar-warn" data-pct="{{ row.pct }}"></div>
+                {% else %}
+                  <div class="att-bar att-bar-bad" data-pct="{{ row.pct }}"></div>
+                {% endif %}
+              </div>
+              <span class="pct-label">{{ row.pct }}%</span>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<script>
+  document.querySelectorAll('.att-bar[data-pct]').forEach(function(bar) {
+    bar.style.width = bar.getAttribute('data-pct') + '%';
+  });
+</script>
+
+{% endblock %}

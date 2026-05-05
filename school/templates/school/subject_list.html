@@ -1,0 +1,36 @@
+{% extends 'school/base.html' %}
+{% block title %}Subjects — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / Subjects{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">Subjects</div><div class="page-subtitle">All subjects across grades</div></div>
+  <a href="{% url 'subject_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Subject</a>
+</div>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Subject</th><th>Code</th><th>Grade</th><th>Teacher</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for subject in subjects %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:36px;height:36px;border-radius:8px;background:rgba(188,140,255,.15);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--purple);"><i class="fas fa-book"></i></div>
+              <strong>{{ subject.name }}</strong>
+            </div>
+          </td>
+          <td><code style="font-size:12px;color:var(--accent);">{{ subject.code }}</code></td>
+          <td><span class="badge badge-orange">{{ subject.grade.name }}</span></td>
+          <td>{{ subject.teacher.get_full_name|default:"<span style='color:var(--text2)'>Not assigned</span>" }}</td>
+          <td>
+            <a href="{% url 'subject_edit' subject.pk %}" class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5"><div class="empty-state"><i class="fas fa-book"></i><p>No subjects added yet</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

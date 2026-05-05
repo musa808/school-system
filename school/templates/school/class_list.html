@@ -1,0 +1,45 @@
+{% extends 'school/base.html' %}
+{% block title %}Classes — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / Classes{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">Class Sections</div><div class="page-subtitle">All class sections across grades</div></div>
+  <a href="{% url 'class_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Section</a>
+</div>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Section</th><th>Grade</th><th>Class Teacher</th><th>Academic Year</th><th>Capacity</th><th>Enrolled</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for section in sections %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:36px;height:36px;border-radius:8px;background:rgba(88,166,255,.15);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--blue);">{{ section.name }}</div>
+              <strong>{{ section }}</strong>
+            </div>
+          </td>
+          <td><span class="badge badge-orange">{{ section.grade.name }}</span></td>
+          <td>{{ section.class_teacher.get_full_name|default:"<span style='color:var(--text2)'>Not assigned</span>" }}</td>
+          <td style="font-size:12px;color:var(--text2);">{{ section.academic_year.name }}</td>
+          <td>{{ section.capacity }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-weight:700;color:{% if section.student_count >= section.capacity %}var(--red){% else %}var(--green){% endif %};">{{ section.student_count }}</span>
+              <div style="background:var(--bg3);border-radius:4px;height:5px;width:60px;">
+                <div style="background:var(--accent);height:100%;width:{% widthratio section.student_count section.capacity 100 %}%;border-radius:4px;"></div>
+              </div>
+            </div>
+          </td>
+          <td><a href="{% url 'class_detail' section.pk %}" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i> View</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7"><div class="empty-state"><i class="fas fa-door-open"></i><p>No class sections created yet</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

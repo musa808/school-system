@@ -1,0 +1,58 @@
+{% extends 'school/base.html' %}
+{% block title %}Fee Report — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / <a href="{% url 'fee_list' %}">Fees</a> / Report{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">Fee Collection Report</div><div class="page-subtitle">Per-grade fee summary by student</div></div>
+</div>
+<div class="card" style="margin-bottom:20px;max-width:400px;">
+  <div class="card-body">
+    <form method="get" style="display:flex;gap:12px;align-items:flex-end;">
+      <div class="form-group" style="flex:1;">
+        <label>Select Grade</label>
+        <select class="form-input" name="grade">
+          <option value="">-- Select a grade --</option>
+          {% for grade in grades %}<option value="{{ grade.pk }}" {% if selected_grade == grade.pk|stringformat:"s" %}selected{% endif %}>{{ grade.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Generate</button>
+    </form>
+  </div>
+</div>
+{% if data %}
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Student</th><th>Class</th><th>Total Paid</th><th>Total Pending</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for row in data %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="avatar">{{ row.student.first_name|first }}{{ row.student.last_name|first }}</div>
+              <div>
+                <div style="font-weight:600;">{{ row.student.get_full_name }}</div>
+                <div style="font-size:11px;color:var(--text2);">{{ row.student.student_id }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ row.student.section|default:"—" }}</td>
+          <td style="color:var(--green);font-weight:700;">${{ row.paid|floatformat:2 }}</td>
+          <td style="color:{% if row.pending > 0 %}var(--red){% else %}var(--text2){% endif %};font-weight:700;">${{ row.pending|floatformat:2 }}</td>
+          <td>
+            {% if row.pending == 0 %}
+              <span class="badge badge-green">Cleared</span>
+            {% else %}
+              <span class="badge badge-red">Outstanding</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5"><div class="empty-state"><i class="fas fa-users"></i><p>No students found</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

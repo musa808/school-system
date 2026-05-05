@@ -1,0 +1,18 @@
+{% extends 'school/base.html' %}
+{% block title %}Confirm Delete — EduPrime{% endblock %}
+{% block content %}
+<div style="max-width:480px;margin:60px auto;text-align:center;">
+  <div class="card">
+    <div class="card-body" style="padding:40px;">
+      <div style="font-size:48px;color:var(--red);margin-bottom:16px;"><i class="fas fa-exclamation-triangle"></i></div>
+      <div style="font-size:20px;font-weight:700;margin-bottom:8px;">Confirm Removal</div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:28px;">Are you sure you want to remove <strong style="color:var(--text);">{{ name }}</strong>? This action cannot be undone.</div>
+      <form method="post" style="display:flex;gap:12px;justify-content:center;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> Yes, Remove</button>
+        <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'school/base.html' %}
+{% block title %}{{ student.get_full_name }} — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / <a href="{% url 'student_list' %}">Students</a> / {{ student.get_full_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="avatar" style="width:56px;height:56px;font-size:20px;">
+      {% if student.photo %}<img src="{{ student.photo.url }}">{% else %}{{ student.first_name|first }}{{ student.last_name|first }}{% endif %}
+    </div>
+    <div>
+      <div class="page-title">{{ student.get_full_name }}</div>
+      <div class="page-subtitle">{{ student.student_id }} · {{ student.section|default:"No class assigned" }}</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;">
+    <a href="{% url 'student_edit' student.pk %}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</a>
+    <a href="{% url 'student_delete' student.pk %}" class="btn btn-danger"><i class="fas fa-trash"></i> Remove</a>
+  </div>
+</div>
+
+<div class="grid-2" style="margin-bottom:20px;">
+  <!-- Profile Info -->
+  <div class="card">
+    <div class="card-header"><span class="card-title"><i class="fas fa-id-card" style="color:var(--blue)"></i> Personal Information</span></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        {% for label, value in  student.first_name,student.last_name,student.date_of_birth,student.gender,student.blood_group,student.admission_date %}{% endfor %}
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">First Name</div><div style="font-size:14px;margin-top:3px;">{{ student.first_name }}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Last Name</div><div style="font-size:14px;margin-top:3px;">{{ student.last_name }}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Date of Birth</div><div style="font-size:14px;margin-top:3px;">{{ student.date_of_birth }}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Gender</div><div style="margin-top:3px;"><span class="badge {% if student.gender == 'M' %}badge-blue{% else %}badge-purple{% endif %}">{% if student.gender == 'M' %}Male{% else %}Female{% endif %}</span></div></div>
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Blood Group</div><div style="font-size:14px;margin-top:3px;">{{ student.blood_group|default:"—" }}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Admission Date</div><div style="font-size:14px;margin-top:3px;">{{ student.admission_date }}</div></div>
+      </div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+        <div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Address</div>
+        <div style="font-size:13.5px;margin-top:3px;color:var(--text);">{{ student.address }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Guardian + Attendance -->
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="card">
+      <div class="card-header"><span class="card-title"><i class="fas fa-user-friends" style="color:var(--accent)"></i> Guardian</span></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Name</div><div style="font-size:14px;margin-top:3px;">{{ student.guardian_name }}</div></div>
+          <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Relation</div><div style="font-size:14px;margin-top:3px;">{{ student.guardian_relationship }}</div></div>
+          <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Phone</div><div style="font-size:14px;margin-top:3px;">{{ student.guardian_phone }}</div></div>
+          <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Email</div><div style="font-size:14px;margin-top:3px;">{{ student.guardian_email|default:"—" }}</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title"><i class="fas fa-chart-pie" style="color:var(--green)"></i> Attendance Overview</span></div>
+      <div class="card-body">
+        <div style="display:flex;align-items:center;gap:24px;">
+          <div style="text-align:center;">
+            <div style="font-size:40px;font-weight:800;color:{% if attendance_pct >= 75 %}var(--green){% elif attendance_pct >= 50 %}var(--yellow){% else %}var(--red){% endif %};">{{ attendance_pct }}%</div>
+            <div style="font-size:12px;color:var(--text2);">Attendance Rate</div>
+          </div>
+          <div>
+            <div style="font-size:13px;color:var(--text2);">Present: <strong style="color:var(--green);">{{ present_count }}</strong></div>
+            <div style="font-size:13px;color:var(--text2);">Total Days: <strong>{{ total_attendance }}</strong></div>
+          </div>
+        </div>
+        <div style="background:var(--bg3);border-radius:8px;overflow:hidden;height:8px;margin-top:12px;">
+          <div style="background:var(--green);height:100%;width:{{ attendance_pct }}%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Results -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-header"><span class="card-title"><i class="fas fa-chart-bar" style="color:var(--purple)"></i> Recent Exam Results</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Subject</th><th>Exam</th><th>Date</th><th>Marks</th><th>Percentage</th><th>Grade</th></tr></thead>
+      <tbody>
+        {% for result in results %}
+        <tr>
+          <td>{{ result.exam.subject.name }}</td>
+          <td>{{ result.exam.name }}</td>
+          <td style="color:var(--text2);font-size:12px;">{{ result.exam.date }}</td>
+          <td>{{ result.marks_obtained }} / {{ result.exam.total_marks }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="flex:1;background:var(--bg3);border-radius:4px;height:6px;min-width:60px;">
+                <div style="background:var(--accent);height:100%;width:{{ result.percentage|floatformat:0 }}%;border-radius:4px;"></div>
+              </div>
+              <span style="font-size:12px;">{{ result.percentage|floatformat:1 }}%</span>
+            </div>
+          </td>
+          <td><span class="badge {% if result.grade_letter == 'F' %}badge-red{% elif result.grade_letter == 'A+' or result.grade_letter == 'A' %}badge-green{% else %}badge-orange{% endif %}">{{ result.grade_letter }}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6"><div class="empty-state"><i class="fas fa-chart-bar"></i><p>No results yet</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Fee Payments -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-header">
+    <span class="card-title"><i class="fas fa-receipt" style="color:var(--yellow)"></i> Fee Payments</span>
+    <a href="{% url 'fee_payment_add' %}" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Record Payment</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Fee</th><th>Amount Due</th><th>Paid</th><th>Due Date</th><th>Status</th><th>Receipt</th></tr></thead>
+      <tbody>
+        {% for payment in payments %}
+        <tr>
+          <td>{{ payment.fee_structure.name }}</td>
+          <td>${{ payment.amount_due }}</td>
+          <td>${{ payment.amount_paid }}</td>
+          <td style="font-size:12px;color:var(--text2);">{{ payment.due_date }}</td>
+          <td>
+            <span class="badge {% if payment.status == 'paid' %}badge-green{% elif payment.status == 'overdue' %}badge-red{% elif payment.status == 'partial' %}badge-yellow{% else %}badge-gray{% endif %}">{{ payment.status }}</span>
+          </td>
+          <td>
+            {% if payment.receipt_number %}<a href="{% url 'fee_receipt' payment.pk %}" class="btn btn-sm btn-secondary"><i class="fas fa-receipt"></i></a>{% else %}—{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6"><div class="empty-state"><i class="fas fa-file-invoice"></i><p>No payments recorded</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Recent Attendance -->
+<div class="card">
+  <div class="card-header"><span class="card-title"><i class="fas fa-calendar-check" style="color:var(--blue)"></i> Recent Attendance (Last 30 Records)</span></div>
+  <div class="card-body">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      {% for att in attendances %}
+      <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+        <div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
+          background:{% if att.status == 'present' %}rgba(63,185,80,.15){% elif att.status == 'absent' %}rgba(248,81,73,.15){% else %}rgba(227,179,65,.15){% endif %};
+          color:{% if att.status == 'present' %}var(--green){% elif att.status == 'absent' %}var(--red){% else %}var(--yellow){% endif %};"
+          title="{{ att.date }} - {{ att.status }}">
+          <i class="fas fa-{% if att.status == 'present' %}check{% elif att.status == 'absent' %}times{% else %}clock{% endif %}"></i>
+        </div>
+        <div style="font-size:9px;color:var(--text2);">{{ att.date|date:"d" }}</div>
+      </div>
+      {% empty %}
+      <div class="empty-state"><i class="fas fa-calendar"></i><p>No attendance records</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

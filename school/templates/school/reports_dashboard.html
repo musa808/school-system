@@ -1,0 +1,60 @@
+{% extends 'school/base.html' %}
+{% block title %}Reports — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / Reports{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">Reports & Analytics</div><div class="page-subtitle">Generate insights across all school operations</div></div>
+</div>
+
+<div class="grid-3" style="margin-bottom:24px;">
+  <a href="{% url 'report_students' %}" style="text-decoration:none;">
+    <div class="card" style="cursor:pointer;transition:transform .2s,border-color .2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--blue)'" onmouseout="this.style.transform='';this.style.borderColor='var(--border)'">
+      <div class="card-body" style="text-align:center;padding:32px 20px;">
+        <div style="width:60px;height:60px;border-radius:16px;background:rgba(88,166,255,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:var(--blue);"><i class="fas fa-user-graduate"></i></div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:6px;">Student Report</div>
+        <div style="font-size:13px;color:var(--text2);">Enrollment by grade, class distribution, active vs inactive</div>
+      </div>
+    </div>
+  </a>
+
+  <a href="{% url 'report_finance' %}" style="text-decoration:none;">
+    <div class="card" style="cursor:pointer;transition:transform .2s,border-color .2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--green)'" onmouseout="this.style.transform='';this.style.borderColor='var(--border)'">
+      <div class="card-body" style="text-align:center;padding:32px 20px;">
+        <div style="width:60px;height:60px;border-radius:16px;background:rgba(63,185,80,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:var(--green);"><i class="fas fa-chart-pie"></i></div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:6px;">Finance Report</div>
+        <div style="font-size:13px;color:var(--text2);">Fee collections, outstanding balances, breakdown by type</div>
+      </div>
+    </div>
+  </a>
+
+  <a href="{% url 'attendance_report' %}" style="text-decoration:none;">
+    <div class="card" style="cursor:pointer;transition:transform .2s,border-color .2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--accent)'" onmouseout="this.style.transform='';this.style.borderColor='var(--border)'">
+      <div class="card-body" style="text-align:center;padding:32px 20px;">
+        <div style="width:60px;height:60px;border-radius:16px;background:rgba(240,136,62,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:var(--accent);"><i class="fas fa-clipboard-check"></i></div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:6px;">Attendance Report</div>
+        <div style="font-size:13px;color:var(--text2);">Monthly class-level attendance breakdown per student</div>
+      </div>
+    </div>
+  </a>
+
+  <a href="{% url 'result_report' %}" style="text-decoration:none;">
+    <div class="card" style="cursor:pointer;transition:transform .2s,border-color .2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--purple)'" onmouseout="this.style.transform='';this.style.borderColor='var(--border)'">
+      <div class="card-body" style="text-align:center;padding:32px 20px;">
+        <div style="width:60px;height:60px;border-radius:16px;background:rgba(188,140,255,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:var(--purple);"><i class="fas fa-chart-bar"></i></div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:6px;">Academic Results</div>
+        <div style="font-size:13px;color:var(--text2);">Per-student exam results, grades, and performance</div>
+      </div>
+    </div>
+  </a>
+
+  <a href="{% url 'fee_report' %}" style="text-decoration:none;">
+    <div class="card" style="cursor:pointer;transition:transform .2s,border-color .2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--yellow)'" onmouseout="this.style.transform='';this.style.borderColor='var(--border)'">
+      <div class="card-body" style="text-align:center;padding:32px 20px;">
+        <div style="width:60px;height:60px;border-radius:16px;background:rgba(227,179,65,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;color:var(--yellow);"><i class="fas fa-file-invoice-dollar"></i></div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:6px;">Fee by Grade</div>
+        <div style="font-size:13px;color:var(--text2);">See paid vs pending fees grouped by grade level</div>
+      </div>
+    </div>
+  </a>
+</div>
+{% endblock %}

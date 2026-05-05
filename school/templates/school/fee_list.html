@@ -1,0 +1,84 @@
+{% extends 'school/base.html' %}
+{% block title %}Fee Payments — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / Fees{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">Fee Payments</div><div class="page-subtitle">Track and manage all student fee records</div></div>
+  <div style="display:flex;gap:10px;">
+    <a href="{% url 'fee_payment_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Record Payment</a>
+    <a href="{% url 'fee_structure_list' %}" class="btn btn-secondary"><i class="fas fa-list"></i> Fee Structures</a>
+    <a href="{% url 'fee_report' %}" class="btn btn-secondary"><i class="fas fa-chart-bar"></i> Report</a>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+    <div>
+      <div class="stat-value">${{ total_collected|floatformat:0 }}</div>
+      <div class="stat-label">Total Collected</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon red"><i class="fas fa-exclamation-circle"></i></div>
+    <div>
+      <div class="stat-value">${{ total_pending|floatformat:0 }}</div>
+      <div class="stat-label">Total Pending</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <form method="get" style="display:flex;gap:10px;margin:0;">
+      <select class="form-input" name="status" style="width:160px;">
+        <option value="">All Statuses</option>
+        <option value="paid" {% if status_filter == 'paid' %}selected{% endif %}>Paid</option>
+        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="partial" {% if status_filter == 'partial' %}selected{% endif %}>Partial</option>
+        <option value="overdue" {% if status_filter == 'overdue' %}selected{% endif %}>Overdue</option>
+      </select>
+      <button type="submit" class="btn btn-secondary"><i class="fas fa-filter"></i> Filter</button>
+      <a href="{% url 'fee_list' %}" class="btn btn-secondary">Reset</a>
+    </form>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Student</th><th>Fee</th><th>Amount Due</th><th>Amount Paid</th><th>Due Date</th><th>Status</th><th>Receipt</th></tr>
+      </thead>
+      <tbody>
+        {% for payment in payments %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="avatar">{{ payment.student.first_name|first }}{{ payment.student.last_name|first }}</div>
+              <div>
+                <div style="font-weight:600;font-size:13px;">{{ payment.student.get_full_name }}</div>
+                <div style="font-size:11px;color:var(--text2);">{{ payment.student.section }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ payment.fee_structure.name }}</td>
+          <td style="font-weight:600;">${{ payment.amount_due }}</td>
+          <td style="color:var(--green);font-weight:600;">${{ payment.amount_paid }}</td>
+          <td style="font-size:12px;color:{% if payment.status == 'overdue' %}var(--red){% else %}var(--text2){% endif %};">{{ payment.due_date }}</td>
+          <td>
+            <span class="badge {% if payment.status == 'paid' %}badge-green{% elif payment.status == 'overdue' %}badge-red{% elif payment.status == 'partial' %}badge-yellow{% else %}badge-gray{% endif %}">
+              {{ payment.status }}
+            </span>
+          </td>
+          <td>
+            {% if payment.receipt_number %}
+            <a href="{% url 'fee_receipt' payment.pk %}" class="btn btn-sm btn-secondary" title="{{ payment.receipt_number }}"><i class="fas fa-receipt"></i></a>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7"><div class="empty-state"><i class="fas fa-file-invoice-dollar"></i><p>No payment records found</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

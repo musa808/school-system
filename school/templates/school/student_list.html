@@ -1,0 +1,78 @@
+{% extends 'school/base.html' %}
+{% block title %}Students — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / <a href="{% url 'student_list' %}">Students</a>{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Students</div>
+    <div class="page-subtitle">{{ students.count }} active students enrolled</div>
+  </div>
+  <a href="{% url 'student_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Student</a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="filters" style="margin:0;">
+      <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input class="form-input" type="text" name="q" placeholder="Search name or ID..." value="{{ q }}" style="width:220px;">
+        </div>
+        <select class="form-input" name="section" style="width:180px;">
+          <option value="">All Classes</option>
+          {% for section in sections %}
+          <option value="{{ section.id }}" {% if selected_section == section.id|stringformat:"s" %}selected{% endif %}>{{ section }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-secondary"><i class="fas fa-filter"></i> Filter</button>
+        <a href="{% url 'student_list' %}" class="btn btn-secondary">Reset</a>
+      </form>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th><th>ID</th><th>Class</th><th>Gender</th><th>Guardian</th><th>Contact</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="avatar">
+                {% if student.photo %}<img src="{{ student.photo.url }}">{% else %}{{ student.first_name|first }}{{ student.last_name|first }}{% endif %}
+              </div>
+              <div>
+                <div style="font-weight:600;">{{ student.get_full_name }}</div>
+                <div style="font-size:11px;color:var(--text2);">DOB: {{ student.date_of_birth }}</div>
+              </div>
+            </div>
+          </td>
+          <td><code style="font-size:12px;color:var(--accent);">{{ student.student_id }}</code></td>
+          <td>{{ student.section|default:"<span style='color:var(--text2)'>Unassigned</span>" }}</td>
+          <td>
+            <span class="badge {% if student.gender == 'M' %}badge-blue{% else %}badge-purple{% endif %}">
+              {% if student.gender == 'M' %}Male{% else %}Female{% endif %}
+            </span>
+          </td>
+          <td style="font-size:13px;">{{ student.guardian_name }}</td>
+          <td style="font-size:12px;color:var(--text2);">{{ student.guardian_phone }}</td>
+          <td><span class="badge badge-green">Active</span></td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <a href="{% url 'student_detail' student.pk %}" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i></a>
+              <a href="{% url 'student_edit' student.pk %}" class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a>
+              <a href="{% url 'student_delete' student.pk %}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8"><div class="empty-state"><i class="fas fa-user-graduate"></i><p>No students found</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

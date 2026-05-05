@@ -1,0 +1,40 @@
+{% extends 'school/base.html' %}
+{% block title %}Events — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / Events{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">School Events</div><div class="page-subtitle">Upcoming and past school events</div></div>
+  <a href="{% url 'event_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Event</a>
+</div>
+
+<div class="grid-3">
+  {% for event in events %}
+  <div class="card" style="transition:transform .2s,border-color .2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='var(--purple)'" onmouseout="this.style.transform='';this.style.borderColor='var(--border)'">
+    <div style="background:linear-gradient(135deg,rgba(188,140,255,.15),rgba(88,166,255,.08));padding:20px;border-bottom:1px solid var(--border);">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--purple);margin-bottom:6px;">
+        <i class="fas fa-calendar-alt"></i> {{ event.date|date:"M d, Y" }}
+      </div>
+      <div style="font-size:17px;font-weight:700;">{{ event.title }}</div>
+    </div>
+    <div class="card-body">
+      {% if event.description %}
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px;">{{ event.description|truncatechars:100 }}</div>
+      {% endif %}
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        {% if event.location %}
+        <div style="font-size:12px;color:var(--text2);"><i class="fas fa-map-marker-alt" style="color:var(--accent);width:14px;"></i> {{ event.location }}</div>
+        {% endif %}
+        {% if event.end_date %}
+        <div style="font-size:12px;color:var(--text2);"><i class="fas fa-flag-checkered" style="color:var(--green);width:14px;"></i> Ends: {{ event.end_date|date:"M d, Y" }}</div>
+        {% endif %}
+        <div style="font-size:11px;color:var(--text2);margin-top:6px;"><i class="fas fa-user" style="width:14px;"></i> {{ event.created_by.get_full_name|default:"Admin" }}</div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div style="grid-column:1/-1;">
+    <div class="card"><div class="card-body"><div class="empty-state"><i class="fas fa-calendar-alt"></i><p>No events scheduled. Add one!</p></div></div></div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

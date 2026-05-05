@@ -1,0 +1,51 @@
+{% extends 'school/base.html' %}
+{% block title %}Results — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / Results{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">Exam Results</div><div class="page-subtitle">All recorded exam results</div></div>
+  <div style="display:flex;gap:10px;">
+    <a href="{% url 'result_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Result</a>
+    <a href="{% url 'result_report' %}" class="btn btn-secondary"><i class="fas fa-chart-bar"></i> Student Report</a>
+  </div>
+</div>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Student</th><th>Exam</th><th>Subject</th><th>Marks</th><th>Percentage</th><th>Grade</th></tr>
+      </thead>
+      <tbody>
+        {% for result in results %}
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="avatar">{{ result.student.first_name|first }}{{ result.student.last_name|first }}</div>
+              <strong>{{ result.student.get_full_name }}</strong>
+            </div>
+          </td>
+          <td>{{ result.exam.name }}</td>
+          <td>{{ result.exam.subject.name }}</td>
+          <td>{{ result.marks_obtained }} / {{ result.exam.total_marks }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="flex:1;background:var(--bg3);border-radius:4px;height:6px;min-width:80px;">
+                <div style="background:var(--accent);height:100%;width:{{ result.percentage|floatformat:0 }}%;border-radius:4px;"></div>
+              </div>
+              <span style="font-size:12px;">{{ result.percentage|floatformat:1 }}%</span>
+            </div>
+          </td>
+          <td>
+            <span class="badge {% if result.grade_letter == 'F' %}badge-red{% elif result.grade_letter == 'A+' or result.grade_letter == 'A' %}badge-green{% else %}badge-orange{% endif %}">
+              {{ result.grade_letter }}
+            </span>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6"><div class="empty-state"><i class="fas fa-chart-bar"></i><p>No results recorded yet</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

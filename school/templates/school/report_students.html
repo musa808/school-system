@@ -1,0 +1,54 @@
+{% extends 'school/base.html' %}
+{% block title %}Student Report — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / <a href="{% url 'reports_dashboard' %}">Reports</a> / Students{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">Student Enrollment Report</div></div>
+</div>
+<div class="card" style="margin-bottom:20px;max-width:400px;">
+  <div class="card-body">
+    <form method="get" style="display:flex;gap:12px;align-items:flex-end;">
+      <div class="form-group" style="flex:1;">
+        <label>Select Grade</label>
+        <select class="form-input" name="grade">
+          <option value="">-- All Grades --</option>
+          {% for grade in grades %}<option value="{{ grade.pk }}" {% if selected_grade == grade.pk|stringformat:"s" %}selected{% endif %}>{{ grade.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Generate</button>
+    </form>
+  </div>
+</div>
+{% if data %}
+<div class="card">
+  <div class="card-header"><span class="card-title">{{ data.grade.name }} — Class Breakdown</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Class Section</th><th>Class Teacher</th><th>Capacity</th><th>Enrolled</th><th>Occupancy</th></tr></thead>
+      <tbody>
+        {% for section in data.sections %}
+        <tr>
+          <td><strong>{{ section }}</strong></td>
+          <td>{{ section.class_teacher.get_full_name|default:"Not assigned" }}</td>
+          <td>{{ section.capacity }}</td>
+          <td style="font-weight:700;color:var(--blue);">{{ section.student_count }}</td>
+          <td>
+            {% with pct=section.student_count|floatformat:0 %}
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="flex:1;background:var(--bg3);border-radius:4px;height:6px;min-width:80px;">
+                <div style="background:var(--accent);height:100%;width:{% widthratio section.student_count section.capacity 100 %}%;border-radius:4px;"></div>
+              </div>
+              <span style="font-size:12px;">{% widthratio section.student_count section.capacity 100 %}%</span>
+            </div>
+            {% endwith %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5"><div class="empty-state"><i class="fas fa-door-open"></i><p>No sections in this grade</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

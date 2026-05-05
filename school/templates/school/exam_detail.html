@@ -1,0 +1,44 @@
+{% extends 'school/base.html' %}
+{% block title %}{{ exam.name }} — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / <a href="{% url 'exam_list' %}">Exams</a> / {{ exam.name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">{{ exam.name }}</div><div class="page-subtitle">{{ exam.subject.name }} · {{ exam.section }} · {{ exam.date }}</div></div>
+  <a href="{% url 'result_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Result</a>
+</div>
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-users"></i></div><div><div class="stat-value">{{ total_students }}</div><div class="stat-label">Students Sat</div></div></div>
+  <div class="stat-card"><div class="stat-icon green"><i class="fas fa-check"></i></div><div><div class="stat-value">{{ pass_count }}</div><div class="stat-label">Passed</div></div></div>
+  <div class="stat-card"><div class="stat-icon orange"><i class="fas fa-chart-line"></i></div><div><div class="stat-value">{{ avg_marks }}</div><div class="stat-label">Average Marks</div></div></div>
+  <div class="stat-card"><div class="stat-icon red"><i class="fas fa-bullseye"></i></div><div><div class="stat-value">{{ exam.total_marks }}</div><div class="stat-label">Total Marks</div></div></div>
+</div>
+<div class="card">
+  <div class="card-header"><span class="card-title">Results</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Rank</th><th>Student</th><th>Marks</th><th>Percentage</th><th>Grade</th><th>Remarks</th></tr></thead>
+      <tbody>
+        {% for result in results %}
+        <tr>
+          <td style="font-weight:700;color:{% if forloop.counter == 1 %}var(--yellow){% elif forloop.counter == 2 %}var(--text2){% elif forloop.counter == 3 %}var(--accent){% else %}var(--text2){% endif %};">
+            {% if forloop.counter <= 3 %}<i class="fas fa-trophy"></i>{% endif %} #{{ forloop.counter }}
+          </td>
+          <td><strong>{{ result.student.get_full_name }}</strong></td>
+          <td>{{ result.marks_obtained }}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="flex:1;background:var(--bg3);border-radius:4px;height:6px;min-width:80px;"><div style="background:var(--accent);height:100%;width:{{ result.percentage|floatformat:0 }}%;border-radius:4px;"></div></div>
+              {{ result.percentage|floatformat:1 }}%
+            </div>
+          </td>
+          <td><span class="badge {% if result.grade_letter == 'F' %}badge-red{% elif result.grade_letter == 'A+' or result.grade_letter == 'A' %}badge-green{% else %}badge-orange{% endif %}">{{ result.grade_letter }}</span></td>
+          <td style="font-size:12px;color:var(--text2);">{{ result.remarks|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6"><div class="empty-state"><i class="fas fa-chart-bar"></i><p>No results yet</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

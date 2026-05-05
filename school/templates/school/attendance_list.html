@@ -1,0 +1,47 @@
+{% extends 'school/base.html' %}
+{% block title %}Attendance — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / Attendance{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">Attendance Records</div></div>
+  <div style="display:flex;gap:10px;">
+    <a href="{% url 'attendance_mark' %}" class="btn btn-primary"><i class="fas fa-pen"></i> Mark Attendance</a>
+    <a href="{% url 'attendance_report' %}" class="btn btn-secondary"><i class="fas fa-chart-bar"></i> Report</a>
+  </div>
+</div>
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-icon green"><i class="fas fa-check"></i></div><div><div class="stat-value">{{ stats.present }}</div><div class="stat-label">Present</div></div></div>
+  <div class="stat-card"><div class="stat-icon red"><i class="fas fa-times"></i></div><div><div class="stat-value">{{ stats.absent }}</div><div class="stat-label">Absent</div></div></div>
+  <div class="stat-card"><div class="stat-icon yellow"><i class="fas fa-clock"></i></div><div><div class="stat-value">{{ stats.late }}</div><div class="stat-label">Late</div></div></div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin:0;">
+      <input type="date" class="form-input" name="date" value="{{ date_filter }}" style="width:160px;">
+      <select class="form-input" name="section" style="width:180px;">
+        <option value="">All Classes</option>
+        {% for s in sections %}<option value="{{ s.id }}" {% if selected_section == s.id|stringformat:"s" %}selected{% endif %}>{{ s }}</option>{% endfor %}
+      </select>
+      <button type="submit" class="btn btn-secondary"><i class="fas fa-filter"></i> Filter</button>
+    </form>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Student</th><th>Class</th><th>Date</th><th>Status</th><th>Remarks</th></tr></thead>
+      <tbody>
+        {% for att in attendances %}
+        <tr>
+          <td>{{ att.student.get_full_name }}</td>
+          <td>{{ att.section }}</td>
+          <td style="font-size:12px;color:var(--text2);">{{ att.date }}</td>
+          <td><span class="badge {% if att.status == 'present' %}badge-green{% elif att.status == 'absent' %}badge-red{% elif att.status == 'late' %}badge-yellow{% else %}badge-gray{% endif %}">{{ att.status }}</span></td>
+          <td style="font-size:12px;color:var(--text2);">{{ att.remarks|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5"><div class="empty-state"><i class="fas fa-clipboard-check"></i><p>No attendance records for this date/class</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'school/base.html' %}
+{% block title %}{{ staff.get_full_name }} — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / <a href="{% url 'staff_list' %}">Staff</a> / {{ staff.get_full_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="avatar" style="width:56px;height:56px;font-size:20px;">{{ staff.first_name|first|upper }}{{ staff.last_name|first|upper }}</div>
+    <div>
+      <div class="page-title">{{ staff.get_full_name|default:staff.username }}</div>
+      <div class="page-subtitle">{{ staff.role|title }} · {{ staff.email|default:"No email" }}</div>
+    </div>
+  </div>
+  <a href="{% url 'staff_edit' staff.pk %}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</a>
+</div>
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header"><span class="card-title"><i class="fas fa-info-circle" style="color:var(--blue)"></i> Profile</span></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Username</div><div style="font-size:14px;margin-top:3px;font-family:'DM Mono',monospace;">{{ staff.username }}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Role</div><div style="margin-top:3px;"><span class="badge badge-blue">{{ staff.role }}</span></div></div>
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Phone</div><div style="font-size:14px;margin-top:3px;">{{ staff.phone|default:"—" }}</div></div>
+        <div><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Email</div><div style="font-size:14px;margin-top:3px;">{{ staff.email|default:"—" }}</div></div>
+      </div>
+      {% if staff.address %}<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);"><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;">Address</div><div style="font-size:13.5px;margin-top:4px;">{{ staff.address }}</div></div>{% endif %}
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <div class="card">
+      <div class="card-header"><span class="card-title"><i class="fas fa-door-open" style="color:var(--green)"></i> Class Teacher Of</span></div>
+      <div class="card-body">
+        {% for section in sections %}
+        <div style="padding:10px;background:var(--bg3);border-radius:8px;margin-bottom:8px;">
+          <div style="font-weight:600;font-size:13.5px;">{{ section }}</div>
+          <div style="font-size:12px;color:var(--text2);">{{ section.academic_year }}</div>
+        </div>
+        {% empty %}
+        <div style="color:var(--text2);font-size:13px;">Not a class teacher</div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title"><i class="fas fa-book" style="color:var(--accent)"></i> Teaching Subjects</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          {% for subject in subjects %}
+          <span class="badge badge-orange">{{ subject.name }} ({{ subject.grade.name }})</span>
+          {% empty %}
+          <div style="color:var(--text2);font-size:13px;">No subjects assigned</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

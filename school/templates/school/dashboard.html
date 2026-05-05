@@ -1,0 +1,164 @@
+{% extends 'school/base.html' %}
+{% block title %}Dashboard — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="page-title">Dashboard</div>
+    <div class="page-subtitle">Welcome back, {{ user.get_full_name|default:user.username }} 👋</div>
+  </div>
+  <a href="{% url 'student_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Student</a>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fas fa-user-graduate"></i></div>
+    <div>
+      <div class="stat-value">{{ stats.total_students }}</div>
+      <div class="stat-label">Total Students</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fas fa-chalkboard-teacher"></i></div>
+    <div>
+      <div class="stat-value">{{ stats.total_staff }}</div>
+      <div class="stat-label">Staff Members</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon orange"><i class="fas fa-door-open"></i></div>
+    <div>
+      <div class="stat-value">{{ stats.total_sections }}</div>
+      <div class="stat-label">Class Sections</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon red"><i class="fas fa-file-invoice-dollar"></i></div>
+    <div>
+      <div class="stat-value">{{ stats.pending_fees }}</div>
+      <div class="stat-label">Pending Fee Records</div>
+    </div>
+  </div>
+</div>
+
+<!-- Today's Attendance + Quick Actions -->
+<div class="grid-2" style="margin-bottom:20px;">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title"><i class="fas fa-clipboard-check" style="color:var(--green)"></i> Today's Attendance</span>
+      <a href="{% url 'attendance_mark' %}" class="btn btn-sm btn-primary"><i class="fas fa-pen"></i> Mark</a>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;gap:20px;flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="font-size:36px;font-weight:800;color:var(--green);">{{ present_today }}</div>
+          <div style="font-size:12px;color:var(--text2);">Present</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:36px;font-weight:800;color:var(--red);">{{ absent_today }}</div>
+          <div style="font-size:12px;color:var(--text2);">Absent</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        {% if present_today or absent_today %}
+        {% with total=present_today|add:absent_today %}
+        <div style="background:var(--bg3);border-radius:8px;overflow:hidden;height:8px;">
+          <div style="background:var(--green);height:100%;width:{% widthratio present_today total 100 %}%;transition:width .5s;"></div>
+        </div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px;">{{ today }} attendance recorded</div>
+        {% endwith %}
+        {% else %}
+        <div style="font-size:13px;color:var(--text2);">No attendance marked today yet.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title"><i class="fas fa-bolt" style="color:var(--yellow)"></i> Quick Actions</span></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+      <a href="{% url 'attendance_mark' %}" class="btn btn-secondary" style="justify-content:flex-start;"><i class="fas fa-clipboard-check"></i> Mark Attendance</a>
+      <a href="{% url 'student_add' %}" class="btn btn-secondary" style="justify-content:flex-start;"><i class="fas fa-user-plus"></i> Enroll New Student</a>
+      <a href="{% url 'fee_payment_add' %}" class="btn btn-secondary" style="justify-content:flex-start;"><i class="fas fa-money-bill-wave"></i> Record Fee Payment</a>
+      <a href="{% url 'announcement_add' %}" class="btn btn-secondary" style="justify-content:flex-start;"><i class="fas fa-bullhorn"></i> Post Announcement</a>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Students + Announcements -->
+<div class="grid-2" style="margin-bottom:20px;">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title"><i class="fas fa-user-graduate" style="color:var(--blue)"></i> Recently Enrolled</span>
+      <a href="{% url 'student_list' %}" class="btn btn-sm btn-secondary">View All</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Student</th><th>Class</th><th>Admitted</th></tr></thead>
+        <tbody>
+          {% for student in recent_students %}
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="avatar">{{ student.first_name|first }}{{ student.last_name|first }}</div>
+                <div>
+                  <div style="font-weight:600;font-size:13px;">{{ student.get_full_name }}</div>
+                  <div style="font-size:11px;color:var(--text2);">{{ student.student_id }}</div>
+                </div>
+              </div>
+            </td>
+            <td>{{ student.section|default:"—" }}</td>
+            <td style="font-size:12px;color:var(--text2);">{{ student.admission_date }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3"><div class="empty-state"><i class="fas fa-users"></i><p>No students yet</p></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title"><i class="fas fa-bullhorn" style="color:var(--accent)"></i> Announcements</span>
+      <a href="{% url 'announcement_add' %}" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i></a>
+    </div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
+      {% for ann in recent_announcements %}
+      <div style="padding:14px;background:var(--bg3);border-radius:10px;border-left:3px solid var(--accent);">
+        <div style="font-size:13px;font-weight:600;">{{ ann.title }}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;">{{ ann.content|truncatechars:80 }}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:6px;">{{ ann.created_at|date:"M d, Y" }} · <span class="badge badge-blue">{{ ann.audience }}</span></div>
+      </div>
+      {% empty %}
+      <div class="empty-state"><i class="fas fa-bullhorn"></i><p>No announcements</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Upcoming Events -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-title"><i class="fas fa-calendar-alt" style="color:var(--purple)"></i> Upcoming Events</span>
+    <a href="{% url 'event_add' %}" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Add Event</a>
+  </div>
+  <div class="card-body">
+    {% if upcoming_events %}
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+      {% for event in upcoming_events %}
+      <div style="flex:1;min-width:180px;background:var(--bg3);border-radius:10px;padding:16px;border-top:3px solid var(--purple);">
+        <div style="font-size:13px;font-weight:700;">{{ event.title }}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px;"><i class="fas fa-calendar"></i> {{ event.date }}</div>
+        {% if event.location %}<div style="font-size:12px;color:var(--text2);"><i class="fas fa-map-marker-alt"></i> {{ event.location }}</div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fas fa-calendar-alt"></i><p>No upcoming events</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

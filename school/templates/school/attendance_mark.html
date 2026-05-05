@@ -1,0 +1,150 @@
+{% extends 'school/base.html' %}
+
+{% block title %}Mark Attendance — EduPrime{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'dashboard' %}">Home</a> /
+<a href="{% url 'attendance_list' %}">Attendance</a> / Mark
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="page-title">Mark Attendance</div>
+  <a href="{% url 'attendance_list' %}" class="btn btn-secondary">⬅ Back</a>
+</div>
+
+<!-- CLASS SELECT -->
+<div class="card" style="max-width:600px;margin-bottom:20px;">
+  <div class="card-body">
+    <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;">
+      
+      <div style="flex:1;">
+        <label>Class Section</label>
+        <select name="section" class="form-input" required>
+          <option value="">Select class</option>
+          {% for s in sections %}
+            <option value="{{ s.id }}" {% if selected_section == s.id|stringformat:"s" %}selected{% endif %}>
+              {{ s }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div style="flex:1;">
+        <label>Date</label>
+        <input type="date" name="date" class="form-input" value="{{ date_str }}" required>
+      </div>
+
+      <button class="btn btn-primary">Load</button>
+
+    </form>
+  </div>
+</div>
+
+{% if students_with_status %}
+
+<div class="card">
+  <div class="card-body">
+
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- ACTIONS -->
+      <div style="display:flex;gap:10px;margin-bottom:15px;">
+        <button type="button" onclick="setAll('present')" class="btn btn-secondary">All Present</button>
+        <button type="button" onclick="setAll('absent')" class="btn btn-secondary">All Absent</button>
+      </div>
+
+      <!-- STUDENTS -->
+      {% for student, existing_att in students_with_status %}
+
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid #eee;">
+
+        <!-- Avatar -->
+        <div class="avatar">
+          {{ student.first_name|first }}{{ student.last_name|first }}
+        </div>
+
+        <!-- Info -->
+        <div style="flex:1;">
+          <div style="font-weight:600;">{{ student.get_full_name }}</div>
+          <small>{{ student.student_id }}</small>
+        </div>
+
+        <!-- STATUS -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+
+          <!-- PRESENT -->
+          <label>
+            <input type="radio" name="status_{{ student.id }}" value="present"
+              {% if not existing_att or existing_att.status == 'present' %}checked{% endif %}>
+            <span class="status present">✔ Present</span>
+          </label>
+
+          <!-- ABSENT -->
+          <label>
+            <input type="radio" name="status_{{ student.id }}" value="absent"
+              {% if existing_att.status == 'absent' %}checked{% endif %}>
+            <span class="status absent">✖ Absent</span>
+          </label>
+
+          <!-- LATE -->
+          <label>
+            <input type="radio" name="status_{{ student.id }}" value="late"
+              {% if existing_att.status == 'late' %}checked{% endif %}>
+            <span class="status late">⏰ Late</span>
+          </label>
+
+        </div>
+
+        <input type="text" name="remarks_{{ student.id }}" class="form-input" placeholder="Remarks">
+
+      </div>
+
+      {% endfor %}
+
+      <div style="margin-top:20px;">
+        <button class="btn btn-primary">Save Attendance</button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<style>
+.status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.present { background:#d4edda; color:#28a745; }
+.absent { background:#f8d7da; color:#dc3545; }
+.late { background:#fff3cd; color:#856404; }
+
+.avatar {
+  width:35px;height:35px;
+  border-radius:50%;
+  background:#007bff;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+}
+</style>
+
+<script>
+function setAll(val) {
+  document.querySelectorAll(`input[value="${val}"]`).forEach(r => {
+    r.checked = true;
+  });
+}
+</script>
+
+{% endif %}
+
+{% endblock %}

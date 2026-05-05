@@ -1,0 +1,74 @@
+{% extends 'school/base.html' %}
+{% block title %}Leave Requests — EduPrime{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard' %}">Home</a> / Leave Requests{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><div class="page-title">Leave Requests</div><div class="page-subtitle">Student and staff leave applications</div></div>
+  <a href="{% url 'leave_add' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Submit Leave</a>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Applicant</th><th>Type</th><th>Leave Type</th><th>From</th><th>To</th><th>Reason</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for leave in leaves %}
+        <tr>
+          <td>
+            {% if leave.student %}
+            <div>
+              <div style="font-weight:600;">{{ leave.student.get_full_name }}</div>
+              <div style="font-size:11px;color:var(--text2);">Student · {{ leave.student.section }}</div>
+            </div>
+            {% elif leave.staff %}
+            <div>
+              <div style="font-weight:600;">{{ leave.staff.get_full_name }}</div>
+              <div style="font-size:11px;color:var(--text2);">{{ leave.staff.get_role_display }}</div>
+            </div>
+            {% else %}—{% endif %}
+          </td>
+          <td>
+            <span class="badge {% if leave.student %}badge-blue{% else %}badge-green{% endif %}">
+              {% if leave.student %}Student{% else %}Staff{% endif %}
+            </span>
+          </td>
+          <td><span class="badge badge-gray">{{ leave.get_leave_type_display }}</span></td>
+          <td style="font-size:12px;">{{ leave.start_date }}</td>
+          <td style="font-size:12px;">{{ leave.end_date }}</td>
+          <td style="font-size:12px;color:var(--text2);max-width:180px;">{{ leave.reason|truncatechars:60 }}</td>
+          <td>
+            <span class="badge {% if leave.status == 'approved' %}badge-green{% elif leave.status == 'rejected' %}badge-red{% else %}badge-yellow{% endif %}">
+              {{ leave.status }}
+            </span>
+          </td>
+          <td>
+            {% if leave.status == 'pending' %}
+            <div style="display:flex;gap:6px;">
+              <form method="post" action="{% url 'leave_review' leave.pk %}" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="approved">
+                <button type="submit" class="btn btn-sm" style="background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3);"><i class="fas fa-check"></i></button>
+              </form>
+              <form method="post" action="{% url 'leave_review' leave.pk %}" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="rejected">
+                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+              </form>
+            </div>
+            {% else %}
+            <div style="font-size:11px;color:var(--text2);">
+              {% if leave.reviewed_by %}By {{ leave.reviewed_by.get_full_name }}{% endif %}
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8"><div class="empty-state"><i class="fas fa-calendar-times"></i><p>No leave requests submitted</p></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

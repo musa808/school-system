@@ -1,0 +1,137 @@
+{% extends 'school/base.html' %}
+
+{% block title %}Timetable — EduPrime{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'dashboard' %}">Home</a> / Timetable
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Class Timetable</div>
+    <div class="page-subtitle">Weekly schedule by class section</div>
+  </div>
+  <a href="{% url 'timetable_add' %}" class="btn btn-primary">
+    <i class="fas fa-plus"></i> Add Entry
+  </a>
+</div>
+
+<!-- FILTER -->
+<div class="card" style="margin-bottom:20px;max-width:400px;">
+  <div class="card-body">
+    <form method="get" style="display:flex;gap:12px;align-items:flex-end;">
+      <div class="form-group" style="flex:1;">
+        <label>Select Class</label>
+        <select class="form-input" name="section">
+          <option value="">-- Select a class --</option>
+          {% for s in sections %}
+            <option value="{{ s.id }}"
+              {% if selected_section_id|stringformat:"s" == s.id|stringformat:"s" %}selected{% endif %}>
+              {{ s }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-eye"></i> View
+      </button>
+    </form>
+  </div>
+</div>
+
+{% if selected_section %}
+
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">
+      <i class="fas fa-calendar-week" style="color:var(--purple)"></i>
+      {{ selected_section }} — Weekly Schedule
+    </span>
+  </div>
+
+  <div style="overflow-x:auto;">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);min-width:600px;">
+
+      <!-- DAYS HEADER -->
+      {% for day in days %}
+      <div style="background:var(--bg3);padding:12px;text-align:center;">
+        <div style="font-weight:700;font-size:13px;color:var(--accent);">
+          {{ day.1 }}
+        </div>
+      </div>
+      {% endfor %}
+
+      <!-- DAY CONTENT -->
+      {% for day in days %}
+      <div style="background:var(--bg2);padding:12px;display:flex;flex-direction:column;gap:8px;min-height:120px;">
+
+        {% for tt in timetables %}
+          {% if tt.day == day.0 %}
+          <div style="background:var(--bg3);border-radius:8px;padding:10px;border-left:3px solid var(--accent);">
+            <div style="font-weight:600;font-size:12px;">
+              {{ tt.subject.name }}
+            </div>
+            <div style="font-size:11px;color:var(--text2);margin-top:3px;">
+              <i class="fas fa-clock"></i>
+              {{ tt.start_time|time:"H:i" }} – {{ tt.end_time|time:"H:i" }}
+            </div>
+            <div style="font-size:11px;color:var(--text2);">
+              <i class="fas fa-user"></i>
+              {{ tt.teacher.get_full_name|default:tt.teacher.username }}
+            </div>
+          </div>
+          {% endif %}
+        {% endfor %}
+
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
+
+{% elif timetables %}
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Subject</th>
+          <th>Teacher</th>
+          <th>Start</th>
+          <th>End</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tt in timetables %}
+        <tr>
+          <td><span class="badge badge-blue">{{ tt.get_day_display }}</span></td>
+          <td><strong>{{ tt.subject.name }}</strong></td>
+          <td>{{ tt.teacher.get_full_name }}</td>
+          <td>{{ tt.start_time|time:"H:i" }}</td>
+          <td>{{ tt.end_time|time:"H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% else %}
+
+<div class="card">
+  <div class="card-body">
+    <div class="empty-state">
+      <i class="fas fa-calendar-week"></i>
+      <p>Select a class to view its timetable</p>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+{% endblock %}
