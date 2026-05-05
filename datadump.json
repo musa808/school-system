@@ -1,0 +1,146 @@
+[
+{
+  "model": "sessions.session",
+  "pk": "0e2ui47rcxijcbufkj2ok5o9xl9jj843",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2hCYUIZx6d4zEGBAqgaS0q6Md9cmXej2v_f-S_iwrdVvIy9-ZnEWWpx-txjSI7cd8D20W5ept3WZo9wVedAhr53z83K4fwc1jPqt0SkHBlGZpAlMyQCKgZNzABYtRiZKgZ3NEwZGQEOaSGcotkwlonh_ALDTNws:1wJoQ1:1YimNEKRn7HyN34BUtAzvS_-7FXc-hCuxq5DmXXQsFo",
+    "expire_date": "2026-05-18T08:12:45.513Z"
+  }
+},
+{
+  "model": "school.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$pLjHHgO1GZapwJmstGRUIr$69dAydr7j1y/4KN6igIZB5mYSWpfn2aSpcd2nvcZfU8=",
+    "last_login": "2026-05-04T08:12:45.504Z",
+    "is_superuser": true,
+    "username": "muss",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-05-04T08:12:04.832Z",
+    "role": "teacher",
+    "phone": "",
+    "address": "",
+    "photo": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "school.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$jEHGeqgoiyPmYR6Ooe8UrI$gBIrKb6sqm6TePIKz7hNwLRJA9OHgFhB8NUNJ29Sef4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "huka",
+    "first_name": "musa",
+    "last_name": "mohamud",
+    "email": "mohamudmusa115@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-05-04T08:24:07.753Z",
+    "role": "principal",
+    "phone": "0701321132",
+    "address": "P.O BOX 34",
+    "photo": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "school.academicyear",
+  "pk": 1,
+  "fields": {
+    "name": "2026",
+    "start_date": "2026-01-08",
+    "end_date": "2026-10-21",
+    "is_current": false
+  }
+},
+{
+  "model": "school.grade",
+  "pk": 1,
+  "fields": {
+    "name": "Grade One",
+    "description": "the lowest"
+  }
+},
+{
+  "model": "school.section",
+  "pk": 1,
+  "fields": {
+    "grade": 1,
+    "name": "junior sec",
+    "class_teacher": [
+      "muss"
+    ],
+    "academic_year": 1,
+    "capacity": 30
+  }
+},
+{
+  "model": "school.subject",
+  "pk": 1,
+  "fields": {
+    "name": "Biology",
+    "code": "CSC 223",
+    "grade": 1,
+    "teacher": [
+      "huka"
+    ],
+    "description": "it deals with issues science"
+  }
+},
+{
+  "model": "school.student",
+  "pk": 1,
+  "fields": {
+    "user": null,
+    "student_id": "1238",
+    "first_name": "musa",
+    "last_name": "mohamud",
+    "date_of_birth": "2006-04-14",
+    "gender": "M",
+    "blood_group": "O+",
+    "photo": "",
+    "section": 1,
+    "admission_date": "2026-05-04",
+    "address": "matagari",
+    "is_active": true,
+    "guardian_name": "Halima",
+    "guardian_phone": "0748225612",
+    "guardian_email": "hmusa7920@gmail.com",
+    "guardian_relationship": "Mother"
+  }
+},
+{
+  "model": "school.attendance",
+  "pk": 1,
+  "fields": {
+    "student": 1,
+    "date": "2026-05-05",
+    "status": "present",
+    "section": 1,
+    "remarks": "",
+    "marked_by": [
+      "muss"
+    ]
+  }
+},
+{
+  "model": "school.timetable",
+  "pk": 1,
+  "fields": {
+    "section": 1,
+    "subject": 1,
+    "teacher": [
+      "muss"
+    ],
+    "day": "Mon",
+    "start_time": "20:40:00",
+    "end_time": "21:40:00"
+  }
+}
+]
