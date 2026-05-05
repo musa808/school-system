@@ -1,3 +1,9 @@
-echo ".env" >> .gitignore
-echo "sqlite3" >> .gitignore
-echo "datadump.json" >> .gitignore
+.env
+db.sqlite3
+__pycache__/
+*.pyc
+*.pyo
+staticfiles/
+media/
+venv/
+*.log
