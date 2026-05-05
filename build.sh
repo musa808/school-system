@@ -9,9 +9,14 @@ python manage.py collectstatic --noinput
 
 python manage.py shell -c "
 from school.models import User
-if not User.objects.filter(username='flash').exists():
-    User.objects.create_superuser('flash', 'flash@example.com', '48rewc23')
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin', 'admin@example.com', 'Admin1234!')
     print('Superuser created')
 else:
-    print('Superuser already exists')
+    u = User.objects.get(username='admin')
+    u.set_password('Admin1234!')
+    u.is_superuser = True
+    u.is_staff = True
+    u.save()
+    print('Superuser password reset')
 "
