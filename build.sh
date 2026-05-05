@@ -1,24 +1,17 @@
 #!/usr/bin/env bash
-# build.sh - Render runs this on every deploy
+set -o errexit
 
-set -o errexit  # exit on error
-
-# Install dependencies
 pip install -r requirements.txt
 
-# Collect static files
-python manage.py collectstatic --no-input
-
-# Run database migrations
 python manage.py migrate
 
-# Create superuser if it doesn't exist (optional)
-python manage.py shell << 'EOF'
-from django.contrib.auth import get_user_model
-User = get_user_model()
-if not User.objects.filter(username='admin').exists():
-    User.objects.create_superuser('admin', 'admin@brightpath.com', 'Admin@1234!')
-    print('Superuser created.')
+python manage.py collectstatic --noinput
+
+python manage.py shell -c "
+from school.models import User
+if not User.objects.filter(username='flash').exists():
+    User.objects.create_superuser('flash', 'flash@example.com', '48rewc23')
+    print('Superuser created')
 else:
-    print('Superuser already exists.')
-EOF
+    print('Superuser already exists')
+"
